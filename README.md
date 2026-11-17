@@ -1,4 +1,9 @@
-# A6400 Extra-Menu
+# A6400 Extra-Menu (V3 Beta 實驗分支)
+
+> ### ⚠️ 警告：V3 Beta 實驗分支（尚未經過核實認證，請小心使用）
+> - 本分支（`beta-v3-bling-shutter`）為 **實驗性 V3 Beta 版本**，新增 **開機前原生快門音替換研究（[`camera/bling_bind.c`](camera/bling_bind.c)）** 與選單預覽（`A6400_BETA_BLING_SHUTTER` / `A6400_BETA_PREBOOT_NATIVE_SHUTTER`）。
+> - **本分支尚未完成完整實機冷開機核實認證，請勿直接用於重要拍攝，務必先備份 `/tmp/autoexec.sh` 與 `/tmp/a6400-film-boot-v15.tar` 並確保可透過 `/tmp/disable_bling` 或穩定版回滾腳本還原。**
+> - 若需要已實機冷開機驗證的穩定版本，請切換回 **`main`** 分支（標籤 `v3-clite-stable-20261117`）。
 
 ![A6400 V3 CLite 機身實拍：半透明深色浮動卡片、頂部 Sony Alpha 橘條與繁體中文介面](docs/images/a6400-extra-menu-v3-clite.jpg)
 

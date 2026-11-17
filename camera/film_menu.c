@@ -74,6 +74,9 @@ int film_menu_hit(int page, int x, int y) {
         if (x >= 76 && x < 564) {
             if (y >= 106 && y < 182) return 0;
             if (y >= 198 && y < 274) return 1;
+#ifdef A6400_BETA_BLING_SHUTTER
+            if (y >= 290 && y < 366) return 3;
+#endif
         }
         if (x >= 404 && x < 564 && y >= 386 && y < 428) return 2;
         return -1;
@@ -98,6 +101,9 @@ static unsigned activate(struct film_menu *m, int row) {
             change |= FILM_MENU_SETTINGS_CHANGED;
         } else if (row == 1) m->page = FILM_MENU_STOCKS;
         else if (row == 2) return film_menu_close(m);
+#ifdef A6400_BETA_BLING_SHUTTER
+        else if (row == 3) change |= FILM_MENU_SOUND_TOGGLED;
+#endif
     } else {
         if (row < 5) change |= (unsigned)film_menu_set_stock(m, row);
         m->page = FILM_MENU_HOME;

@@ -71,6 +71,11 @@ typedef void *(*create_layer_fn)(void *,const uint32_t *);
 typedef void (*mouse_position_fn)(const void *,unsigned char,short *,short *);
 typedef int (*mouse_state_fn)(const void *,unsigned char,unsigned char);
 typedef int (*key_fn)(void *,int,void *);
+#ifdef A6400_BETA_BLING_SHUTTER
+typedef void (*beep_play_fn)(void *,int);
+#define A6400_BETA_SHUTTER_KEY 0xa7
+#define A6400_BETA_SHUTTER_SOUND_ID 0x33
+#endif
 typedef void (*font_fn)(void *,uint32_t);
 
 static struct a6400_ui_state {
@@ -126,6 +131,12 @@ volatile unsigned a6400_ui_stop_requested_v1;
 static struct {
     void *card_border, *card_panel, *header_accent, *header_divider;
     void *row_accents[6];
+#ifdef A6400_BETA_BLING_SHUTTER
+    beep_play_fn beep_play;
+    int shutter_sound_enabled;
+    int last_shutter_key;
+    uint32_t last_shutter_beep_ms;
+#endif
 } ui_theme;
 
 static uint32_t now_ms(void) {
@@ -180,6 +191,10 @@ static __attribute__((noinline)) int resolve(void) {
     API(mouse_state,mouse_state_fn,"_ZNK2ux6wgtsys12WidgetSystem13getMouseStateEhh",0x5f1045);
     API(key,key_fn,"_ZN10InfraInput20GetPhyKeyStatusCacheEiP21_InfraInputPhyKeyData",0x860fa9);
 #undef API
+#ifdef A6400_BETA_BLING_SHUTTER
+    ui_theme.beep_play=(beep_play_fn)api("_ZN13AppWidgetBase8beepPlayEi",0x3fe817u);
+    if(!ui_theme.beep_play)return -1;
+#endif
     return 0;
 }
 static void place(void *widget,int label,int x,int y,int w,int h) {
@@ -211,18 +226,32 @@ static void draw(void *unused,const struct film_menu *menu) {
     const unsigned char accent_orange[4]={234,140,42,255};
     const unsigned char accent_gold[4]={212,162,58,220};
     const unsigned char accent_muted[4]={68,76,90,200};
+#ifdef A6400_BETA_BLING_SHUTTER
+    snprintf(ui.texts[0],sizeof(ui.texts[0]),"A6400 V3C Beta  |  %s",
+             menu->settings.enabled?"開啟":"關閉");
+#else
     snprintf(ui.texts[0],sizeof(ui.texts[0]),"A6400 V3 CLite  |  %s",
              menu->settings.enabled?"開啟":"關閉");
+#endif
     ui.set_text(ui.labels[0],ui.texts[0]);
     for(unsigned row=0;row<6;row++) {
         int x=0,y=0,w=0,h=0;
         int used=film_native_view_row(menu,row,ui.texts[row+1],sizeof(ui.texts[0]),&x,&y,&w,&h);
         if(used<=0){ui.texts[row+1][0]=0;w=h=0;}
+#ifdef A6400_BETA_BLING_SHUTTER
+        else if(menu->page==FILM_MENU_HOME && row==3) {
+            snprintf(ui.texts[row+1],sizeof(ui.texts[0]),"%s",
+                     ui_theme.shutter_sound_enabled?"快門聲: Bling (叮叮叮)":"快門聲: 關閉");
+        }
+#endif
         record("ROW_PANEL_GEOMETRY",row,used);
         place(ui.panels[row],0,x,y,w,h);
         int is_dismiss=(menu->page==FILM_MENU_HOME && row==2) ||
                        (menu->page==FILM_MENU_STOCKS && row==5);
         int is_active=(menu->page==FILM_MENU_HOME && row==0 && menu->settings.enabled) ||
+#ifdef A6400_BETA_BLING_SHUTTER
+                      (menu->page==FILM_MENU_HOME && row==3 && ui_theme.shutter_sound_enabled) ||
+#endif
                       (menu->page==FILM_MENU_STOCKS && (int)row==menu->settings.stock);
         const unsigned char *panel_color=row_plain;
         if(menu->selected==(int)row)panel_color=is_dismiss?pill_pressed:row_pressed;
@@ -390,6 +419,30 @@ static void animate(void *self) {
 #endif
     unsigned change=film_native_view_step(&ui.view,now,menu,zoom,other,touch,x,y);
     if(change&FILM_MENU_SETTINGS_CHANGED)record("FILM_TAP",x,y);
+#ifdef A6400_BETA_BLING_SHUTTER
+    if(change&FILM_MENU_SOUND_TOGGLED) {
+        ui_theme.shutter_sound_enabled^=1;
+        draw(0,&ui.view.menu);
+        record("BETA_SOUND_TOGGLE",ui_theme.shutter_sound_enabled,0);
+        if(ui_theme.shutter_sound_enabled && ui_theme.beep_play) {
+            ui_theme.last_shutter_beep_ms=now;
+            ui_theme.beep_play(ui.background,A6400_BETA_SHUTTER_SOUND_ID);
+            record("BETA_MENU_BEEP_PREVIEW",A6400_BETA_SHUTTER_SOUND_ID,(int)now);
+        }
+    }
+#ifndef A6400_BETA_PREBOOT_NATIVE_SHUTTER
+    int shutter_down=ui.key(ui.keys,A6400_BETA_SHUTTER_KEY,0);
+    if(shutter_down==1 && ui_theme.last_shutter_key==0 &&
+       ui_theme.shutter_sound_enabled && ui_theme.beep_play &&
+       (!ui_theme.last_shutter_beep_ms ||
+        (uint32_t)(now-ui_theme.last_shutter_beep_ms)>=350u)) {
+        ui_theme.last_shutter_beep_ms=now;
+        ui_theme.beep_play(ui.background,A6400_BETA_SHUTTER_SOUND_ID);
+        record("BETA_SHUTTER_BEEP",A6400_BETA_SHUTTER_SOUND_ID,(int)now);
+    }
+    ui_theme.last_shutter_key=(shutter_down==1)?1:0;
+#endif
+#endif
     if(ui.ticks%300u==0)record("FILM_ALIVE",(int)ui.ticks,ui.view.menu.visible);
 }
 static void *make(int label) {
@@ -474,7 +527,14 @@ int a6400_ui_attach_v1(void *system,unsigned tid) {
         if(!ui.panels[i] || !ui_theme.row_accents[i])return -5;
     }
     for(unsigned i=0;i<8;i++){ui.labels[i]=make(1);if(!ui.labels[i])return -5;}
+#ifdef A6400_BETA_BLING_SHUTTER
+    ui_theme.shutter_sound_enabled=1;
+    ui_theme.last_shutter_key=0;
+    ui_theme.last_shutter_beep_ms=0;
+    strcpy(ui.texts[0],"A6400 V3C Beta  |  關閉");
+#else
     strcpy(ui.texts[0],"A6400 V3 CLite  |  關閉");
+#endif
 #ifdef A6400_UI_SETTINGS_DIAGNOSTIC
     strcpy(ui.texts[7],"MENU + 放大鏡 | RAM");
 #elif defined(A6400_UI_COMBO_DIAGNOSTIC)

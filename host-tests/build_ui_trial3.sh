@@ -58,6 +58,16 @@ case "${A6400_INPUT_DIAGNOSTIC:-0}" in
  1|2) DIAGNOSTIC_FLAGS="$DIAGNOSTIC_FLAGS -DA6400_INPUT_DIAGNOSTIC=$A6400_INPUT_DIAGNOSTIC" ;;
  *) echo "A6400_INPUT_DIAGNOSTIC must be 0, 1 or 2" >&2; exit 2 ;;
 esac
+case "${A6400_BETA_BLING_SHUTTER:-0}" in
+ 0) ;;
+ 1) DIAGNOSTIC_FLAGS="$DIAGNOSTIC_FLAGS -DA6400_BETA_BLING_SHUTTER=1" ;;
+ *) echo "A6400_BETA_BLING_SHUTTER must be 0 or 1" >&2; exit 2 ;;
+esac
+case "${A6400_BETA_PREBOOT_NATIVE_SHUTTER:-0}" in
+ 0) ;;
+ 1) DIAGNOSTIC_FLAGS="$DIAGNOSTIC_FLAGS -DA6400_BETA_PREBOOT_NATIVE_SHUTTER=1" ;;
+ *) echo "A6400_BETA_PREBOOT_NATIVE_SHUTTER must be 0 or 1" >&2; exit 2 ;;
+esac
 mkdir -p "$OUT"
 CC=arm-linux-gnueabihf-gcc
 COMMON="-march=armv7-a+fp -mfpu=vfpv3-d16 -mfloat-abi=hard -Os -Wall -Wextra -Werror -fno-stack-protector -fno-unwind-tables -fno-asynchronous-unwind-tables -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0"

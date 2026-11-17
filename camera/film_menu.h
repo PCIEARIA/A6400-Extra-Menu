@@ -8,6 +8,9 @@ enum film_menu_page { FILM_MENU_HOME, FILM_MENU_STOCKS };
 enum film_menu_change {
     FILM_MENU_REDRAW = 1, FILM_MENU_OPENED = 2, FILM_MENU_CLOSED = 4,
     FILM_MENU_SETTINGS_CHANGED = 8
+#ifdef A6400_BETA_BLING_SHUTTER
+    , FILM_MENU_SOUND_TOGGLED = 16
+#endif
 };
 struct film_menu {
     struct film_settings settings;
