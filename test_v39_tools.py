@@ -92,6 +92,8 @@ class V39ToolsTests(unittest.TestCase):
         install = '\n'.join(deployer.build_install_steps(True, []))
         self.assertIn('/etc/a6400-autoexec.so', install)
         self.assertNotIn('/tmp/a6400-autoexec.so', install)
+        self.assertNotIn('\\etc', install)
+        self.assertNotIn('\\tmp', install)
 
         cam = FakeCam([[b'> '], [b'__PMCA_RC:0__\n']])
         out, rc = deployer.run_cmd(cam, 'echo ok', timeout=0.05, fast=True, retry_on_none=True)

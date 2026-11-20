@@ -409,8 +409,8 @@
     },
     {
       "path": "tools/pmca_deploy_v3_clite.py",
-      "source_sha256": "bf1831163793607a3c3858b4714e5a7c46a62a3e873aad462a9182848a356177",
-      "release_sha256": "bf1831163793607a3c3858b4714e5a7c46a62a3e873aad462a9182848a356177",
+      "source_sha256": "6c8f44718dde237d60e5b43be459d35a68de739ab007897384886eacd306422b",
+      "release_sha256": "6c8f44718dde237d60e5b43be459d35a68de739ab007897384886eacd306422b",
       "release_adjustments": []
     },
     {
@@ -421,8 +421,8 @@
     },
     {
       "path": "test_v39_tools.py",
-      "source_sha256": "aa004346e95d890d2a1a8a1b55f66e0e76b3dfaafcb1c7a987ed197514c81818",
-      "release_sha256": "aa004346e95d890d2a1a8a1b55f66e0e76b3dfaafcb1c7a987ed197514c81818",
+      "source_sha256": "59950822ece94b692b9e838bda26f62092a81fd045e027933219d79134a858d1",
+      "release_sha256": "59950822ece94b692b9e838bda26f62092a81fd045e027933219d79134a858d1",
       "release_adjustments": []
     }
   ],

@@ -5,6 +5,7 @@ import base64
 import hashlib
 import io
 import json
+import posixpath
 import re
 import sys
 import tarfile
@@ -75,8 +76,8 @@ def must_cmd(cam, cmd, label, timeout=15.0):
 
 
 def atomic_copy_steps(src, dst, mode):
-    parent = str(Path(dst).parent)
-    name = Path(dst).name
+    parent = posixpath.dirname(dst)
+    name = posixpath.basename(dst)
     tmp_dst = f"{parent}/{name}.new"
     return [
         f'/bin/busybox cp "{src}" "{tmp_dst}"',
@@ -309,7 +310,7 @@ def main():
         sha = hashlib.sha256(data).hexdigest()
         if sha != row["sha256"]:
             raise RuntimeError(f"local extra file SHA mismatch: {ep}")
-        extra_items.append((ep, Path(row["camera_path"]).name, sha, row.get("mode", "644")))
+        extra_items.append((ep, posixpath.basename(row["camera_path"]), sha, row.get("mode", "644")))
 
     entry_shas = []
     with tarfile.open(boot_tar, "r") as tf:
@@ -393,7 +394,7 @@ def main():
             for _, ename, esha, _ in extra_items:
                 verify_targets.append((f"/tmp_bt/v3c_up/{ename}", esha))
             for vpath, vsha in verify_targets:
-                vout = must_cmd(cam, f'/bin/busybox sha256sum "{vpath}"', f"VERIFY_{Path(vpath).name}")
+                vout = must_cmd(cam, f'/bin/busybox sha256sum "{vpath}"', f"VERIFY_{posixpath.basename(vpath)}")
                 if vsha not in vout:
                     raise RuntimeError(f"uploaded SHA mismatch for {vpath}")
 
@@ -422,7 +423,7 @@ def main():
             for _, ename, esha, _ in extra_items:
                 final_targets.append((f"/tmp/{ename}", esha))
             for fpath, fsha in final_targets:
-                fout = must_cmd(cam, f'/bin/busybox sha256sum "{fpath}"', f"FINAL_{Path(fpath).name}")
+                fout = must_cmd(cam, f'/bin/busybox sha256sum "{fpath}"', f"FINAL_{posixpath.basename(fpath)}")
                 if fsha not in fout:
                     raise RuntimeError(f"final SHA mismatch for {fpath}")
 
