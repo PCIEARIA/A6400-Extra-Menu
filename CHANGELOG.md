@@ -39,7 +39,7 @@
 - **修正 Linux GCC / glibc 單元測試相容性**：
   - [`test_native_film_view.py`](test_native_film_view.py) 以 `model_syscall` 避開 ELF PLT 攔截並修正 `snprintf` 重疊緩衝未定義行為，確保在 macOS 與 Ubuntu Linux（GitHub Actions CI）皆能全數通過。
 - **文件與排雷規範完整化**：
-  - 擴充 [`docs/部署與操作規範.md`](docs/部署與操作規範.md) 第六節「完整實戰排雷手冊」，補齊 Windows Zadig（`054C:0CA8`/`054C:0336` 與 `libusb-win32`）、`--pmca-dir`、`--install-hook`、`--disable_hook`/`/A6400/DISABLE`、24 kHz Sony SDS 格式要求、`/dev/nflasha10` 空間檢查與冷開機驗收步驟。
+  - 擴充 [`docs/部署與操作規範.md`](docs/部署與操作規範.md) 第六節「完整實戰排雷手冊」，正式改推 **Windows 10/11 使用 WSL2 + `usbipd-win --auto-attach` 部署**（避開 Win11 原生 `libusb-win32`/Zadig 驅動問題），並補齊 `--pmca-dir`、`--install-hook`、`/disable_hook`/`/A6400/DISABLE`、24 kHz Sony SDS 格式要求、`/dev/nflasha10` 空間檢查與冷開機驗收步驟。
 
 ---
 
