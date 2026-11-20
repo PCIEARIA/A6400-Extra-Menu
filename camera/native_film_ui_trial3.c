@@ -95,6 +95,17 @@ static int charo_sound_id(int mode) {
 #endif
 }
 static const char *charo_mode_label(int mode,int custom) {
+#if defined(A6400_UI_LANG_SC)
+#if defined(A6400_CHARO_MULTI) && A6400_CHARO_MULTI
+    if(mode==1)return "快门声: 日文 Charo";
+    if(mode==2)return custom?"快门声: SD自定义":"快门声: Bling Bling";
+    if(mode==3)return "快门声: iPhone 快门";
+    return "快门声: 关闭";
+#else
+    if(!mode)return "快门声: 关闭";
+    return custom?"快门声: Charo (SD自定义)":"快门声: Charo (开启)";
+#endif
+#else
 #if defined(A6400_CHARO_MULTI) && A6400_CHARO_MULTI
     if(mode==1)return "快門聲: 日文 Charo";
     if(mode==2)return custom?"快門聲: SD自訂":"快門聲: Bling Bling";
@@ -103,6 +114,7 @@ static const char *charo_mode_label(int mode,int custom) {
 #else
     if(!mode)return "快門聲: 關閉";
     return custom?"快門聲: Charo (SD自訂)":"快門聲: Charo (開啟)";
+#endif
 #endif
 }
 #endif
@@ -335,6 +347,24 @@ static void draw(void *unused,const struct film_menu *menu) {
     const unsigned char accent_orange[4]={234,140,42,255};
     const unsigned char accent_gold[4]={212,162,58,220};
     const unsigned char accent_muted[4]={68,76,90,200};
+#ifdef A6400_UI_LANG_SC
+    if(a6400_ui_status_v1.magic==0x53544156u && a6400_ui_status_v1.seq>0u) {
+        ui_theme.status_seq=a6400_ui_status_v1.seq;
+        unsigned qmax=a6400_ui_status_v1.max_files?(unsigned)a6400_ui_status_v1.max_files:1024u;
+        if(a6400_ui_status_v1.active_jobs>0u) {
+            snprintf(ui.texts[0],sizeof(ui.texts[0]),"V3.9 SSLF | %s | 转档:%u 已转:%u",
+                     menu->settings.enabled?"开启":"关闭",
+                     (unsigned)a6400_ui_status_v1.active_jobs,(unsigned)a6400_ui_status_v1.applied);
+        } else {
+            snprintf(ui.texts[0],sizeof(ui.texts[0]),"V3.9 SSLF | %s | 已转:%u (%u/%u)",
+                     menu->settings.enabled?"开启":"关闭",
+                     (unsigned)a6400_ui_status_v1.applied,(unsigned)a6400_ui_status_v1.scanned,qmax);
+        }
+    } else {
+        snprintf(ui.texts[0],sizeof(ui.texts[0]),"A6400 V3.9 SSLF | %s",
+                 menu->settings.enabled?"开启":"关闭");
+    }
+#else
     if(a6400_ui_status_v1.magic==0x53544156u && a6400_ui_status_v1.seq>0u) {
         ui_theme.status_seq=a6400_ui_status_v1.seq;
         unsigned qmax=a6400_ui_status_v1.max_files?(unsigned)a6400_ui_status_v1.max_files:1024u;
@@ -351,6 +381,7 @@ static void draw(void *unused,const struct film_menu *menu) {
         snprintf(ui.texts[0],sizeof(ui.texts[0]),"A6400 V3.9 SSLF | %s",
                  menu->settings.enabled?"開啟":"關閉");
     }
+#endif
     ui.set_text(ui.labels[0],ui.texts[0]);
     for(unsigned row=0;row<6;row++) {
         int x=0,y=0,w=0,h=0;
@@ -406,8 +437,13 @@ static void draw(void *unused,const struct film_menu *menu) {
         place(ui_theme.page_btn,0,76,386,264,42);
         ui.set_color(ui_theme.page_btn,
                      menu->selected==7?pill_pressed:(a6400_ui_hires_v1?row_active:pill_plain));
+#ifdef A6400_UI_LANG_SC
+        snprintf(ui.texts[7],sizeof(ui.texts[0]),"%s",
+                 a6400_ui_hires_v1?"画质: 6MP 高清":"画质: 1.7MP 极速");
+#else
         snprintf(ui.texts[7],sizeof(ui.texts[0]),"%s",
                  a6400_ui_hires_v1?"畫質: 6MP 高清":"畫質: 1.7MP 極速");
+#endif
         place(ui.labels[7],1,92,392,232,30);
     } else if(menu->page==FILM_MENU_DETAILS) {
         place(ui_theme.page_btn,0,76,386,264,42);
@@ -415,8 +451,13 @@ static void draw(void *unused,const struct film_menu *menu) {
         unsigned qmax=(a6400_ui_status_v1.magic==0x53544156u && a6400_ui_status_v1.max_files)
                       ?(unsigned)a6400_ui_status_v1.max_files:1024u;
         unsigned qcur=a6400_ui_status_v1.magic==0x53544156u?(unsigned)a6400_ui_status_v1.scanned:0u;
+#ifdef A6400_UI_LANG_SC
+        snprintf(ui.texts[7],sizeof(ui.texts[0]),"队列:%u/%u | %s",
+                 qcur,qmax,a6400_ui_hires_v1?"6MP":"1.7MP");
+#else
         snprintf(ui.texts[7],sizeof(ui.texts[0]),"佇列:%u/%u | %s",
                  qcur,qmax,a6400_ui_hires_v1?"6MP":"1.7MP");
+#endif
         place(ui.labels[7],1,92,392,232,30);
     } else {
         place(ui_theme.page_btn,0,0,0,0,0);
@@ -762,9 +803,17 @@ int a6400_ui_attach_v1(void *system,unsigned tid) {
     ui_theme.shutter_pending=0;
     ui_theme.shutter_arm_ms=0;
     ui_theme.last_shutter_beep_ms=0;
-    strcpy(ui.texts[0],"A6400 V3.9 SSLF | 關閉");
+#ifdef A6400_UI_LANG_SC
+    strcpy(ui.texts[0],"A6400 V3.9 SSLF | 关闭");
 #else
     strcpy(ui.texts[0],"A6400 V3.9 SSLF | 關閉");
+#endif
+#else
+#ifdef A6400_UI_LANG_SC
+    strcpy(ui.texts[0],"A6400 V3.9 SSLF | 关闭");
+#else
+    strcpy(ui.texts[0],"A6400 V3.9 SSLF | 關閉");
+#endif
 #endif
 #ifdef A6400_UI_SETTINGS_DIAGNOSTIC
     strcpy(ui.texts[7],"MENU + 放大鏡 | RAM");

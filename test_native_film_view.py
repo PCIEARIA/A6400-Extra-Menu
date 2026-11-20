@@ -357,6 +357,57 @@ void model_open_home(void) { ui.view.menu.visible=1; ui.view.menu.page=FILM_MENU
             self.assertEqual(lib.model_row3().decode('utf-8'), '快門聲: 日文 Charo')
             self.assertEqual((lib.model_beeps(), lib.model_beep_id()), (6, 0x33))
 
+    def test_v39_simplified_chinese_ui_labels(self):
+        with tempfile.TemporaryDirectory() as directory:
+            d = Path(directory)
+            inc = d / 'inc'
+            inc.mkdir()
+            for name in ('film_menu.h', 'film_native_view.h'):
+                (inc / name).write_text((ROOT / 'camera' / name).read_text(encoding='utf-8'), encoding='utf-8')
+            so_file = d / 'view_sc.so'
+            subprocess.run([
+                'cc', '-std=c11', '-shared', '-fPIC', '-Wall', '-Wextra', '-Werror',
+                '-DA6400_UI_LANG_SC=1', '-DA6400_CHARO_SHUTTER=1',
+                '-I', str(inc),
+                str(ROOT / 'camera/film_native_view.c'),
+                str(ROOT / 'camera/film_menu.c'),
+                '-o', str(so_file),
+            ], check=True)
+            lib = ctypes.CDLL(str(so_file))
+
+            class FilmSettings(ctypes.Structure):
+                _fields_ = [('enabled', ctypes.c_int), ('stock', ctypes.c_int), ('grain', ctypes.c_int), ('halation', ctypes.c_int)]
+
+            class FilmMenu(ctypes.Structure):
+                _fields_ = [
+                    ('settings', FilmSettings),
+                    ('visible', ctypes.c_int), ('page', ctypes.c_int), ('selected', ctypes.c_int),
+                    ('last_sample', ctypes.c_uint), ('hold_started', ctypes.c_uint),
+                    ('have_sample', ctypes.c_int), ('released', ctypes.c_int), ('pending', ctypes.c_int), ('fired', ctypes.c_int),
+                    ('touch_ready', ctypes.c_int), ('touching', ctypes.c_int), ('touch_row', ctypes.c_int), ('touch_cancelled', ctypes.c_int),
+                ]
+
+            menu = FilmMenu()
+            init_settings = FilmSettings(0, 0, 2, 1)
+            lib.film_menu_init(ctypes.byref(menu), ctypes.byref(init_settings))
+            menu.visible = 1
+            buf = ctypes.create_string_buffer(64)
+            x, y, w, h = ctypes.c_int(), ctypes.c_int(), ctypes.c_int(), ctypes.c_int()
+
+            def row_text(page, row):
+                menu.page = page
+                rc = lib.film_native_view_row(ctypes.byref(menu), row, buf, 64,
+                                              ctypes.byref(x), ctypes.byref(y), ctypes.byref(w), ctypes.byref(h))
+                self.assertEqual(rc, 1)
+                return buf.value.decode('utf-8')
+
+            self.assertEqual(row_text(0, 0), 'LUT 滤镜: 关闭')
+            self.assertEqual(row_text(0, 1), '胶片风格: Portra 400')
+            self.assertEqual(row_text(0, 4), '胶片细节: 颗粒中 / 光晕开')
+            self.assertEqual(row_text(0, 2), '关闭')
+            self.assertEqual(row_text(3, 0), '颗粒强度: 标准')
+            self.assertEqual(row_text(3, 1), '胶片光晕: 开启')
+            self.assertEqual(row_text(3, 2), '恢复细节默认 (标准/开)')
 
 
 if __name__ == '__main__':

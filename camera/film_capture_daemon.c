@@ -481,12 +481,21 @@ static void push_toast_status(uint32_t kind,uint32_t duration_ms,const char *set
     char preset[24],qtag[16]="",msg[64];
     toast_preset_name(settings,preset,sizeof(preset));
     if(qtot>1u)snprintf(qtag,sizeof(qtag)," (%u/%u)",qpos%1000u,qtot%1000u);
+#ifdef A6400_UI_LANG_SC
+    if(kind==1u)snprintf(msg,sizeof(msg),"处理中%.12s: %.20s%s...",qtag,preset,hires?" 6MP":"");
+    else if(kind==2u) {
+        const char *base=target?strrchr(target,'/'):NULL;
+        base=base?base+1:(target?target:"");
+        snprintf(msg,sizeof(msg),"OK%.12s: %.16s (%.16s)",qtot>1u?qtag:" 已存SD",preset,base);
+    } else snprintf(msg,sizeof(msg),"处理失败%.12s: %.20s",qtag,preset);
+#else
     if(kind==1u)snprintf(msg,sizeof(msg),"處理中%.12s: %.20s%s...",qtag,preset,hires?" 6MP":"");
     else if(kind==2u) {
         const char *base=target?strrchr(target,'/'):NULL;
         base=base?base+1:(target?target:"");
         snprintf(msg,sizeof(msg),"OK%.12s: %.16s (%.16s)",qtot>1u?qtag:" 已存SD",preset,base);
     } else snprintf(msg,sizeof(msg),"處理失敗%.12s: %.20s",qtag,preset);
+#endif
     push_ui_toast(kind,duration_ms,msg);
 }
 static void update_latest_dir(char *latest_dir,size_t cap,const struct catalogue *c) {
@@ -1008,7 +1017,11 @@ int main(int argc,char **argv) {
                 early_toast_sent=0;
                 unsigned prev_applied=applied_jobs;
                 if(run_job(q,settings,hires)) {
+#ifdef A6400_UI_LANG_SC
+                    push_ui_toast(3u,3000u,"处理失败 (未确认)");
+#else
                     push_ui_toast(3u,3000u,"處理失敗 (未確認)");
+#endif
                     push_ui_status(0u);
                     result=21;retain_lock=1;reason="job_uncertain";break;
                 }

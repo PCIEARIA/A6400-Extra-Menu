@@ -20,8 +20,8 @@
     },
     {
       "path": "camera/film_native_view.c",
-      "source_sha256": "30243eec478b52513d76abc19086acf668f79e5d86af6e32a31e8f6a4f3e3b60",
-      "release_sha256": "30243eec478b52513d76abc19086acf668f79e5d86af6e32a31e8f6a4f3e3b60",
+      "source_sha256": "6388c72541fe3eba50bac73244893f100e9d65be52caad387e1a3d4c44fc92de",
+      "release_sha256": "6388c72541fe3eba50bac73244893f100e9d65be52caad387e1a3d4c44fc92de",
       "release_adjustments": []
     },
     {
@@ -122,8 +122,8 @@
     },
     {
       "path": "camera/film_capture_daemon.c",
-      "source_sha256": "4d4ba797cb24f6fa522bbc09603d4b805d3140e3fcb6193f4f9713a587217430",
-      "release_sha256": "4d4ba797cb24f6fa522bbc09603d4b805d3140e3fcb6193f4f9713a587217430",
+      "source_sha256": "d4b72c2db1cd0a419ade15b15e77bf1400dd7bb8e89befb0bcf40f29098439fa",
+      "release_sha256": "d4b72c2db1cd0a419ade15b15e77bf1400dd7bb8e89befb0bcf40f29098439fa",
       "release_adjustments": []
     },
     {
@@ -158,8 +158,8 @@
     },
     {
       "path": "camera/native_film_ui_trial3.c",
-      "source_sha256": "ed01288508f8e66c3056221776a8012a2fce06baba7257d16e9ac4f38cd8eae6",
-      "release_sha256": "ed01288508f8e66c3056221776a8012a2fce06baba7257d16e9ac4f38cd8eae6",
+      "source_sha256": "c54665339d8f06db437f5861cf9db6b5d7cc91bb39c9883286726f03244b2084",
+      "release_sha256": "c54665339d8f06db437f5861cf9db6b5d7cc91bb39c9883286726f03244b2084",
       "release_adjustments": []
     },
     {
@@ -236,8 +236,8 @@
     },
     {
       "path": "host-tests/build_ui_trial3.sh",
-      "source_sha256": "4c588f1b421b09ebc392198dc81cdadec2ebde3a60a02651ae78e4b2b44007fe",
-      "release_sha256": "4c588f1b421b09ebc392198dc81cdadec2ebde3a60a02651ae78e4b2b44007fe",
+      "source_sha256": "282543bf77f41c36463a3e391085c7a5b8612f9842eb5a82035442897e3841c1",
+      "release_sha256": "282543bf77f41c36463a3e391085c7a5b8612f9842eb5a82035442897e3841c1",
       "release_adjustments": []
     },
     {
@@ -260,8 +260,8 @@
     },
     {
       "path": "host-tests/build_film_capture_daemon.sh",
-      "source_sha256": "6f94449e62c59c5be62f429960d2639907e51cd7a67d880312fdfb21d890c608",
-      "release_sha256": "6f94449e62c59c5be62f429960d2639907e51cd7a67d880312fdfb21d890c608",
+      "source_sha256": "2e9280244a271d3648e7ad2846d88fd06d6e73953cd317f28850171d104e3c35",
+      "release_sha256": "2e9280244a271d3648e7ad2846d88fd06d6e73953cd317f28850171d104e3c35",
       "release_adjustments": []
     },
     {
@@ -308,8 +308,8 @@
     },
     {
       "path": "test_native_film_view.py",
-      "source_sha256": "9318fae46225f9f29d1c9cba8baab52f1e048600d502b968d3a63f771a05cb47",
-      "release_sha256": "9318fae46225f9f29d1c9cba8baab52f1e048600d502b968d3a63f771a05cb47",
+      "source_sha256": "c8de034eaa49259721f91e40ed49ac9d4d0148faef65d862d21b287b699b0519",
+      "release_sha256": "c8de034eaa49259721f91e40ed49ac9d4d0148faef65d862d21b287b699b0519",
       "release_adjustments": []
     },
     {
