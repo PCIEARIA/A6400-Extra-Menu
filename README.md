@@ -138,4 +138,4 @@ python3 tools/check_public_tree.py
 
 - 本專案新增部分：[PolyForm Noncommercial 1.0.0](LICENSE)（商業使用須另行取得授權）。
 - 沿用的 MIT / Public Domain 元件：見 [THIRD_PARTY.md](THIRD_PARTY.md)。
-- 特別感謝 **ASFC-CYJ** 提供 Sony A6100（ILCE-6100）與 Windows 10 實機測試並協助促成 `--safe-serial` 安全傳輸機制；特別感謝 **阿杰** 貢獻 [《A6400-V3.x 升級工作流程與經驗教訓》](docs/A6400-V3.x升級工作流程與經驗教訓.md) 並協助定位 Windows `oemXX.inf` 驅動包累積與上傳累計回顯問題；特別感謝 **子康** 貢獻 Sony α6600（ILCE-6600）實機成功開機與套色轉檔驗證；完整致謝見 [ACKNOWLEDGEMENTS.md](ACKNOWLEDGEMENTS.md)。Sony、Kodak、Fujifilm、CineStill 等名稱僅用於描述相容性或模擬色彩選項，本專案並非上述公司之官方產品。
+- 特別感謝 **ASFC-CYJ** 提供 Sony A6100（ILCE-6100）與 Windows 10 實機測試並協助促成 `--safe-serial` 安全傳輸機制；特別感謝 **阿杰** 貢獻 [《A6400-V3.x 升級工作流程與經驗教訓》](docs/A6400-V3.x升級工作流程與經驗教訓.md) 並協助定位 Windows `oemXX.inf` 驅動包累積與上傳累計回顯問題；特別感謝 **子康** 貢獻 Sony α6600（ILCE-6600）實機成功開機與套色轉檔驗證；特別感謝 **杰** 提供 Sony α6400（ILCE-6400 FW 2.00）原生 MENU 第 7 分頁（Tab 7）實機點亮測試，並協助定位 `bootstrap-local.sh` `set -uf` 展開問題與 2021 後期版 `libObj.so` 偏移差異；完整致謝見 [ACKNOWLEDGEMENTS.md](ACKNOWLEDGEMENTS.md)。Sony、Kodak、Fujifilm、CineStill 等名稱僅用於描述相容性或模擬色彩選項，本專案並非上述公司之官方產品。
